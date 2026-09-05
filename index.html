@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<!--
+=====================================================================
+  Kiko 🦫 — رفيقك النفسي اليومي (نسخة تطبيق الويب)
+  ===================================================================
+    Developer: Samreen Ahmed
+    Created: August 2026
+  ---------------------------------------------------------------
+  هذا الملف تحويل كامل للنسخة السابقة (بايثون/tkinter) إلى تطبيق
+  ويب واحد (HTML+CSS+JS) يعمل محليًا في المتصفح بدون خادم حقيقي.
+
+  دليل العلامات: كل قسم أو سطر أُضيف/تغيّر خصيصًا في هذا التحديث
+  (مقارنة بالمنطق الذي كان في نسخة بايثون) موسوم بتعليق يبدأ بـ:
+      🆕 → ميزة/قسم جديد كليًا في هذا التحديث
+      ✏️ → منطق قديم من نسخة بايثون لكنه أُعيد بناؤه/تحسينه هنا
+  بما أن التقنية تغيّرت بالكامل (بايثون ← ويب) فكل الكود "جديد" من
+  ناحية الصياغة، لكن هذه العلامات تحدد أين المنطق أو الميزة الفعلية
+  جديدة تمامًا مقابل أين تم نقل نفس فكرة/ميزة بايثون القديمة فقط.
+=====================================================================
+-->
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kiko 🦫 — رفيقك النفسي اليومي</title>
+<"link rel="manifest" href="manifest.json>
+
+<!-- 🆕 أيقونة التطبيق: رسمة كيكو المبسّطة كصورة SVG مُضمّنة داخل الملف
+     نفسه (Data URI) — تظهر في تبويب المتصفح، وكأيقونة عند إضافة
+     الصفحة إلى الشاشة الرئيسية على الجوال، دون الحاجة لأي ملف صورة
+     خارجي منفصل. -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='54' r='42' fill='%23C79A73' stroke='%236F4E37' stroke-width='3'/%3E%3Ccircle cx='23' cy='26' r='11' fill='%23EFDAB9' stroke='%236F4E37' stroke-width='2'/%3E%3Ccircle cx='77' cy='26' r='11' fill='%23EFDAB9' stroke='%236F4E37' stroke-width='2'/%3E%3Cellipse cx='50' cy='60' rx='27' ry='25' fill='%23F7EAD6'/%3E%3Ccircle cx='41' cy='54' r='3.4' fill='%236F4E37'/%3E%3Ccircle cx='59' cy='54' r='3.4' fill='%236F4E37'/%3E%3Cpath d='M41 68 q9 7 18 0' stroke='%236F4E37' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3Cpath d='M78 70 q9 -7 5 -18 q-11 -3 -12 9 q-1 7 7 9 Z' fill='%235FA485' stroke='%233E7A61' stroke-width='1'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23FAF6F0'/%3E%3Ccircle cx='50' cy='56' r='36' fill='%23C79A73' stroke='%236F4E37' stroke-width='3'/%3E%3Ccircle cx='27' cy='30' r='9' fill='%23EFDAB9' stroke='%236F4E37' stroke-width='2'/%3E%3Ccircle cx='73' cy='30' r='9' fill='%23EFDAB9' stroke='%236F4E37' stroke-width='2'/%3E%3Cellipse cx='50' cy='61' rx='23' ry='21' fill='%23F7EAD6'/%3E%3Ccircle cx='42' cy='56' r='3' fill='%236F4E37'/%3E%3Ccircle cx='58' cy='56' r='3' fill='%236F4E37'/%3E%3Cpath d='M42 68 q8 6 16 0' stroke='%236F4E37' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#C79A73">
+
+<!-- 🆕 خطوط احترافية: Cairo لعناوين/أزرار، Tajawal لنص القراءة، Space Mono للأرقام والإحصائيات -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;600;700;800&family=Tajawal:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+/* =================================================================
+   🆕 نظام التصميم الاحترافي (Design Tokens)
+   لوحة الألوان: كريمي/أبيض للخلفيات، أخضر هادئ للتشجيع والراحة،
+   بني فاتح لهوية كيكو، بني أغمق للعناصر التفاعلية.
+   ================================================================= */
+:root{
+  --bg: #FAF6F0;
+  --bg-soft: #F3ECE2;
+  --surface: #FFFFFF;
+  --surface-2: #FFFDFA;
+  --primary: #C79A73; /* بني فاتح - هوية كيكو */
+  --primary-600: #B98868;
+  --primary-ink: #6F4E37; /* بني أغمق - عناصر تفاعلية */
+  --accent: #8FC3AA; /* أخضر هادئ */
+  --accent-600: #5FA485;
+  --accent-ink: #3E7A61;
+  --text: #3B2F28;
+  --text-muted: #8B7A6C;
+  --danger: #E2937B;
+  --danger-ink: #B25C42;
+  --flame-1: #FF8A4C;
+  --flame-2: #FFC24B;
+  --warn-bg: #FBEAE2;
+  --warn-border: #EFC7B5;
+  --shadow-sm: 0 1px 2px rgba(59,47,40,.06), 0 1px 1px rgba(59,47,40,.04);
+  --shadow-md: 0 6px 20px rgba(111,78,55,.10);
+  --shadow-lg: 0 18px 40px rgba(111,78,55,.16);
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --font-display: 'Cairo', 'Segoe UI', sans-serif;
+  --font-body: 'Tajawal', 'Segoe UI', sans-serif;
+  --font-mono: 'Space Mono', 'Courier New', monospace;
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0; background:linear-gradient(180deg,var(--bg) 0%, var(--bg-soft) 100%);
+  color:var(--text); font-family:var(--font-body); -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+h1,h2,h3,.font-display{ font-family:var(--font-display); }
+button{ font-family:var(--font-display); cursor:pointer; }
+::selection{ background:var(--accent); color:#fff; }
+:focus-visible{ outline:3px solid var(--accent-ink); outline-offset:2px; border-radius:8px; }
+
+/* ---------- إطار التطبيق: شريط جانبي على الشاشات الكبيرة + شريط سفلي على الجوال ---------- */
+.app-shell{
+  max-width:1040px; margin:0 auto; min-height:100vh;
+  display:grid; grid-template-columns:220px 1fr; gap:0;
+}
+.sidebar{
+  padding:28px 18px; display:flex; flex-direction:column; gap:6px;
+  border-left:1px solid rgba(111,78,55,.08);
+}
+.brand{ display:flex; align-items:center; gap:10px; padding:0 8px 22px; }
+.brand-badge{
+  width:40px; height:40px; border-radius:50%;
+  background:radial-gradient(circle at 32% 30%, #E7C9A5, var(--primary) 70%);
+  box-shadow:var(--shadow-sm); display:flex; align-items:center; justify-content:center;
+  font-size:19px;
+}
+.brand-name{ font-weight:800; font-size:19px; letter-spacing:.2px; }
+.brand-sub{ font-size:11px; color:var(--text-muted); margin-top:-2px; }
+
+.nav-item{
+  display:flex; align-items:center; gap:12px; padding:12px 14px; border:0;
+  background:transparent; border-radius:var(--radius-sm); color:var(--text);
+  font-size:14.5px; font-weight:600; text-align:right; transition:background .15s, color .15s, transform .1s;
+}
+.nav-item .ico{ font-size:18px; width:22px; text-align:center; }
+.nav-item:hover{ background:var(--bg-soft); }
+.nav-item.active{ background:var(--primary-ink); color:#fff; box-shadow:var(--shadow-sm); }
+.nav-item:active{ transform:scale(.98); }
+
+.content{ padding:30px 34px 100px; min-width:0; }
+.screen{ display:none; animation:fadeUp .35s ease; }
+.screen.active{ display:block; }
+@keyframes fadeUp{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+/* ---------- شريط سفلي للجوال (يظهر فقط عند الشاشات الضيقة) ---------- */
+.bottom-nav{ display:none; }
+
+@media (max-width:760px){
+  .app-shell{ grid-template-columns:1fr; }
+  .sidebar{ display:none; }
+  .content{ padding:20px 16px 96px; }
+  .bottom-nav{
+    display:flex; position:fixed; inset-inline:0; bottom:0; z-index:40;
+    background:var(--primary-ink); box-shadow:0 -6px 20px rgba(0,0,0,.15);
+  }
+  .bottom-nav button{
+    flex:1; background:transparent; border:0; color:#fff; opacity:.75;
+    padding:10px 4px 12px; display:flex; flex-direction:column; align-items:center; gap:3px;
+    font-size:10.5px; font-weight:600;
+  }
+  .bottom-nav button .ico{ font-size:19px; }
+  .bottom-nav button.active{ opacity:1; }
+}
+
+/* ---------- بطاقات وعناصر عامة ---------- */
+.card{
+  background:var(--surface); border-radius:var(--radius-md); box-shadow:var(--shadow-sm);
+  border:1px solid rgba(111,78,55,.06); padding:22px;
+}
+.page-title{ font-size:23px; font-weight:800; margin:0 0 4px; }
+.page-sub{ color:var(--text-muted); font-size:13.5px; margin:0 0 20px; }
+
+.btn{
+  border:0; border-radius:var(--radius-sm); padding:13px 20px; font-weight:700; font-size:14.5px;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  box-shadow:var(--shadow-sm); transition:transform .12s ease, box-shadow .12s ease, filter .12s ease;
+}
+.btn:hover{ transform:translateY(-1px); box-shadow:var(--shadow-md); filter:brightness(1.03); }
+.btn:active{ transform:translateY(0); filter:brightness(.98); }
+.btn:disabled{ opacity:.6; cursor:not-allowed; transform:none; box-shadow:var(--shadow-sm); }
+.btn-block{ width:100%; }
+.btn-primary{ background:linear-gradient(135deg, var(--accent-600), var(--accent-ink)); color:#fff; }
+.btn-secondary{ background:linear-gradient(135deg,#fff,var(--bg-soft)); color:var(--primary-ink); border:1px solid rgba(111,78,55,.15); }
+.btn-danger{ background:linear-gradient(135deg, var(--danger), var(--danger-ink)); color:#fff; }
+.btn-flame{ background:linear-gradient(135deg, var(--flame-2), var(--flame-1)); color:#fff; }
+.btn-ghost{ background:transparent; color:var(--primary-ink); box-shadow:none; padding:10px 6px; }
+.btn-ghost:hover{ box-shadow:none; text-decoration:underline; }
+
+/* ---------- كيكو: توضيح SVG احترافي بدل الرسم البسيط السابق ---------- */
+.kiko-hero{ display:flex; flex-direction:column; align-items:center; text-align:center; margin-bottom:6px; }
+.kiko-halo{ position:relative; width:190px; height:190px; margin-bottom:6px; }
+.kiko-halo::before{
+  content:''; position:absolute; inset:0; border-radius:50%;
+  background:radial-gradient(circle, rgba(143,195,170,.35), transparent 70%);
+  animation:halo 4.5s ease-in-out infinite;
+}
+@keyframes halo{ 0%,100%{ transform:scale(.92); opacity:.7; } 50%{ transform:scale(1.06); opacity:1; } }
+.kiko-svg{ position:relative; width:190px; height:190px; filter:drop-shadow(0 10px 18px rgba(111,78,55,.18)); }
+.kiko-svg svg{ animation:breathe 4.5s ease-in-out infinite; transform-origin:50% 60%; }
+@keyframes breathe{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.035); } }
+
+.greeting{ font-weight:700; color:var(--primary-ink); font-size:15.5px; margin:2px 0 18px; }
+
+/* ---------- بطاقة اقتباس اليوم ---------- */
+.quote-card{ position:relative; overflow:hidden; }
+.quote-card::before{
+  content:''; position:absolute; inset-inline-start:0; top:0; bottom:0; width:5px;
+  background:linear-gradient(180deg, var(--accent-600), var(--accent-ink));
+}
+.quote-label{ font-size:12px; font-weight:800; color:var(--accent-ink); letter-spacing:.3px; margin-bottom:6px; }
+.quote-text{ font-size:15.5px; line-height:1.9; }
+
+/* ---------- بطاقة تنبيه نمط المزاج السلبي ---------- */
+.alert-card{ background:var(--warn-bg); border:1px solid var(--warn-border); border-radius:var(--radius-md);
+  padding:16px 18px; margin:0 0 16px; font-size:14px; line-height:1.9; display:none; }
+.alert-card.show{ display:block; animation:fadeUp .3s ease; }
+
+.action-grid{ display:grid; gap:10px; margin-top:18px; }
+
+/* ---------- توست/إشعار داخلي احتياطي ---------- */
+#toastContainer{ position:fixed; top:18px; inset-inline-end:18px; z-index:80; display:flex; flex-direction:column; gap:10px; }
+.toast{
+  width:300px; background:var(--surface); border-radius:var(--radius-md); box-shadow:var(--shadow-lg);
+  border-inline-start:4px solid var(--accent-600); padding:14px 16px; animation:toastIn .35s ease;
+  position:relative;
+}
+@keyframes toastIn{ from{ opacity:0; transform:translateY(-14px); } to{ opacity:1; transform:none; } }
+.toast .t-title{ font-weight:800; font-size:13.5px; color:var(--primary-ink); margin-bottom:4px; }
+.toast .t-body{ font-size:12.5px; color:var(--text); line-height:1.7; }
+.toast .t-close{ position:absolute; top:6px; inset-inline-start:8px; background:none; border:0; color:var(--text-muted); font-size:12px; box-shadow:none; padding:4px; }
+
+/* ---------- نافذة تنبيه الإخلاء (Disclaimer) ---------- */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(59,47,40,.45); backdrop-filter:blur(3px);
+  display:flex; align-items:center; justify-content:center; z-index:100; padding:20px;
+}
+.modal-card{
+  background:var(--surface); border-radius:var(--radius-lg); box-shadow:var(--shadow-lg);
+  max-width:420px; width:100%; padding:30px 26px 26px; text-align:center; animation:fadeUp .3s ease;
+}
+.modal-icon{ font-size:34px; margin-bottom:8px; }
+.modal-title{ font-size:18px; font-weight:800; margin:0 0 12px; color:var(--primary-ink); }
+.modal-text{ font-size:14px; line-height:2; color:var(--text); margin:0 0 22px; }
+
+/* ---------- المحرقة ---------- */
+textarea.field{
+  width:100%; border-radius:var(--radius-sm); border:1.5px solid rgba(111,78,55,.15);
+  background:var(--surface-2); padding:14px 16px; font-family:var(--font-body); font-size:14.5px;
+  resize:vertical; min-height:110px; transition:border-color .15s;
+}
+textarea.field:focus{ border-color:var(--accent-600); }
+.burn-stage{
+  position:relative; min-height:150px; border-radius:var(--radius-md); overflow:hidden;
+  background:radial-gradient(circle at 50% 100%, rgba(255,138,76,.08), transparent 65%);
+  display:flex; align-items:center; justify-content:center; margin:16px 0;
+}
+.burn-text{ max-width:88%; text-align:center; font-size:14px; line-height:1.8; color:var(--text); }
+.burn-text.burning{ animation:burnAway 1.8s forwards ease-in; }
+@keyframes burnAway{
+  0%{ color:var(--text); filter:none; transform:translateY(0) scale(1); opacity:1; }
+  55%{ color:var(--flame-1); filter:drop-shadow(0 0 6px rgba(255,138,76,.55)); transform:translateY(-6px) scale(1.02); }
+  100%{ color:var(--flame-2); filter:blur(3px); transform:translateY(-26px) scale(.9); opacity:0; }
+}
+.spark{
+  position:absolute; bottom:20%; width:6px; height:6px; border-radius:50%;
+  animation:sparkUp .9s ease-out forwards;
+}
+@keyframes sparkUp{
+  0%{ transform:translate(0,0) scale(1); opacity:1; }
+  100%{ transform:translate(var(--drift), -110px) scale(.3); opacity:0; }
+}
+.burn-done{ font-weight:700; color:var(--accent-ink); font-size:14.5px; }
+
+/* ---------- المزاج ---------- */
+.mood-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:18px; }
+.mood-btn{
+  border:0; border-radius:var(--radius-md); padding:18px 8px; color:#fff; font-weight:700;
+  display:flex; flex-direction:column; align-items:center; gap:6px; box-shadow:var(--shadow-sm);
+  transition:transform .12s, box-shadow .12s;
+}
+.mood-btn:hover{ transform:translateY(-2px); box-shadow:var(--shadow-md); }
+.mood-btn .em{ font-size:24px; }
+.mood-confirm{ text-align:center; color:var(--accent-ink); font-weight:700; min-height:20px; margin-top:14px; font-size:13.5px; }
+
+/* ---------- الامتنان ---------- */
+.gratitude-status{ font-size:12.5px; color:var(--accent-ink); font-weight:700; min-height:18px; margin-top:8px; }
+.gratitude-list{ margin-top:22px; display:flex; flex-direction:column; gap:10px; max-height:340px; overflow-y:auto; padding-inline-end:4px; }
+.gratitude-item{ background:var(--surface-2); border:1px solid rgba(111,78,55,.08); border-radius:var(--radius-sm); padding:12px 14px; }
+.gratitude-item .g-text{ font-size:13.5px; line-height:1.8; }
+.gratitude-item .g-date{ font-size:10.5px; color:var(--text-muted); margin-top:4px; font-family:var(--font-mono); }
+.empty-note{ color:var(--text-muted); font-size:13px; text-align:center; padding:24px 0; }
+
+/* ---------- الإحصائيات ---------- */
+.stats-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
+.stat-card{ text-align:center; padding:18px 10px; }
+.stat-label{ font-size:11.5px; color:var(--text-muted); font-weight:700; }
+.stat-value{ font-family:var(--font-mono); font-size:26px; font-weight:700; color:var(--accent-ink); margin-top:6px; }
+.chart-svg{ width:100%; height:auto; display:block; }
+.chart-svg .grid-line{ stroke:#EFE6D8; stroke-width:1; }
+.chart-svg .axis-label{ font-size:8px; fill:var(--text-muted); font-family:var(--font-mono); }
+.chart-svg .data-line{ fill:none; stroke:var(--accent-ink); stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+.chart-svg .data-point{ fill:var(--accent-ink); }
+
+/* ---------- التنفس ---------- */
+.breathing-wrap{ display:flex; flex-direction:column; align-items:center; padding:10px 0 4px; }
+.phase-label{ font-weight:800; font-size:15px; color:var(--accent-ink); min-height:22px; margin-bottom:14px; }
+.breath-ring{ position:relative; display:flex; align-items:center; justify-content:center; }
+.breath-ring .ring-bg{ position:absolute; border-radius:50%; background:var(--bg-soft); }
+.breath-circle{
+  border-radius:50%; background:radial-gradient(circle at 35% 30%, #C9EBDA, var(--accent-600) 75%);
+  box-shadow:0 0 0 8px rgba(143,195,170,.18), var(--shadow-md);
+  transition:transform .1s linear;
+}
+.timer-label{ font-family:var(--font-mono); color:var(--text-muted); font-size:13px; margin-top:16px; min-height:18px; }
+
+/* ---------- شاشة التهدئة ---------- */
+.calm-intro{ text-align:center; font-size:14.5px; line-height:1.9; margin-bottom:6px; max-width:420px; margin-inline:auto; }
+.suggestion-card{ display:none; text-align:center; margin-top:18px; background:var(--bg-soft); border-radius:var(--radius-md); padding:16px; }
+.suggestion-card.show{ display:block; animation:fadeUp .3s ease; }
+.suggestion-card .s-title{ font-weight:800; font-size:13px; color:var(--primary-ink); margin-bottom:6px; }
+.suggestion-card .s-text{ font-size:14.5px; }
+
+.footnote{ text-align:center; color:var(--text-muted); font-size:11.5px; margin-top:26px; }
+.back-link{ display:block; text-align:center; margin-top:18px; }
+</style>
+</head>
+<body>
+
+<!-- 🆕 نافذة تنبيه الإخلاء — تظهر إلزاميًا عند فتح التطبيق -->
+<div class="modal-overlay" id="disclaimerModal">
+  <div class="modal-card">
+    <div class="modal-icon">🦫</div>
+    <h2 class="modal-title">تنبيه هام</h2>
+    <p class="modal-text">
+      كيكو هو أداة لدعم العناية بالصحة النفسية، وليس بديلاً عن الطبيب أو الأخصائي النفسي.
+      إذا كنت تعاني من أعراض مستمرة أو تؤثر على حياتك اليومية، فمن الأفضل استشارة مختص.
+    </p>
+    <button class="btn btn-primary btn-block" id="disclaimerBtn">فهمت، متابعة</button>
+  </div>
+</div>
+
+<!-- 🆕 حاوية الإشعارات الداخلية الاحتياطية (تُستخدم فقط إذا رفض المتصفح إذن الإشعارات) -->
+<div id="toastContainer"></div>
+
+<div class="app-shell">
+  <!-- الشريط الجانبي (شاشات كبيرة) — ✏️ نفس فكرة شريط التنقل في نسخة بايثون، بتصميم احترافي -->
+  <nav class="sidebar" id="sidebarNav">
+    <div class="brand">
+      <div class="brand-badge">🦫</div>
+      <div>
+        <div class="brand-name">Kiko</div>
+        <div class="brand-sub">دعمك النفسي اليومي</div>
+      </div>
+    </div>
+    <!-- تُملأ عناصر التنقل عبر JS لتفادي التكرار مع الشريط السفلي -->
+  </nav>
+
+  <main class="content">
+
+    <!-- ============== الشاشة الرئيسية ============== -->
+    <section class="screen active" id="screen-home">
+      <div class="kiko-hero">
+        <div class="kiko-halo">
+          <div class="kiko-svg" id="kikoSvgHolder"></div>
+        </div>
+        <div class="greeting">مرحباً أنا كيكو، كيف كان يومك؟</div>
+      </div>
+
+      <div class="alert-card" id="patternAlert">
+        لاحظ كيكو أنك سجلت مشاعر صعبة خلال الأسابيع الأخيرة. أتمنى أن تكون بخير. إذا كانت هذه
+        المشاعر مستمرة أو تؤثر على حياتك اليومية، فقد يكون التحدث مع طبيب أو أخصائي نفسي خطوة
+        مفيدة. لست مضطرًا لمواجهة كل شيء وحدك 💛
+      </div>
+
+      <div class="card quote-card">
+        <div class="quote-label">🌿 اقتباس اليوم</div>
+        <div class="quote-text" id="homeQuote">—</div>
+      </div>
+
+      <div class="action-grid">
+        <button class="btn btn-primary btn-block" onclick="navigateTo('breathing')">🧘 تمرين تنفس دقيقة واحدة</button>
+        <button class="btn btn-danger btn-block" onclick="navigateTo('calm')">🆘 أنا بحاجة إلى تهدئة</button>
+      </div>
+
+      <p class="footnote">كل بياناتك تبقى محفوظة محليًا فقط 🔒</p>
+    </section>
+
+    <!-- ============== محرقة الأفكار ============== -->
+    <section class="screen" id="screen-burn">
+      <h1 class="page-title">🔥 محرقة الأفكار</h1>
+      <p class="page-sub" style="color:var(--accent-ink); font-weight:700;">لنحرق هذه الأفكار ونتركها خلفنا 🍃</p>
+      <p class="page-sub">لن يُحفظ ما تكتبه في أي مكان، وسيختفي للأبد بعد الحرق.</p>
+
+      <div class="card">
+        <textarea class="field" id="burnInput" placeholder="اكتب ما يثقل صدرك هنا..."></textarea>
+        <div class="burn-stage" id="burnStage"></div>
+        <button class="btn btn-flame btn-block" id="burnBtn" onclick="startBurn()">🔥 احرق هذه الفكرة</button>
+      </div>
+    </section>
+
+    <!-- ============== سجل المزاج ============== -->
+    <section class="screen" id="screen-mood">
+      <h1 class="page-title">📝 كيف تشعر الآن؟</h1>
+      <p class="page-sub">اختر ما يعبّر عن شعورك في هذه اللحظة.</p>
+
+      <div class="card">
+        <div class="mood-grid" id="moodGrid"></div>
+        <div class="mood-confirm" id="moodConfirm"></div>
+      </div>
+    </section>
+
+    <!-- ============== صندوق الامتنان ============== -->
+    <section class="screen" id="screen-gratitude">
+      <h1 class="page-title">🙏 صندوق الامتنان</h1>
+      <p class="page-sub">ما هو شيء واحد تشعر بالامتنان له اليوم؟</p>
+
+      <div class="card">
+        <textarea class="field" id="gratitudeInput" style="min-height:80px;" placeholder="اكتب شيئًا واحدًا..."></textarea>
+        <div style="display:flex; align-items:center; gap:14px; margin-top:12px;">
+          <button class="btn btn-primary" onclick="saveGratitude()">💚 حفظ</button>
+          <span class="gratitude-status" id="gratitudeStatus"></span>
+        </div>
+      </div>
+
+      <p class="page-sub" style="margin-top:22px;">ما كتبته سابقًا — عُد إليه كلما احتجت 🌿</p>
+      <div class="gratitude-list" id="gratitudeList"></div>
+    </section>
+
+    <!-- ============== الإحصائيات ============== -->
+    <section class="screen" id="screen-stats">
+      <h1 class="page-title">📊 إحصائيات مزاجك</h1>
+      <p class="page-sub">نظرة سريعة على نمط مشاعرك بمرور الوقت.</p>
+
+      <div class="stats-row">
+        <div class="card stat-card">
+          <div class="stat-label">متوسط المزاج</div>
+          <div class="stat-value" id="avgMoodValue">—</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-label">أفضل يوم بالأسبوع</div>
+          <div class="stat-value" id="bestDayValue" style="font-size:18px;">—</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div id="chartHolder"></div>
+        <div class="empty-note" id="chartEmptyNote" style="display:none;">سجّل مزاجك لبضعة أيام لتظهر هنا إحصائياتك ورسمك البياني 🦫</div>
+      </div>
+    </section>
+
+    <!-- ============== تمرين التنفس ============== -->
+    <section class="screen" id="screen-breathing">
+      <h1 class="page-title">🧘 دقيقة تنفس هادئة</h1>
+      <p class="page-sub">تابع الدائرة: شهيق 4 ثوانٍ ← احتفاظ ثانيتين ← زفير 6 ثوانٍ</p>
+
+      <div class="card breathing-wrap">
+        <div class="phase-label" id="ph-label-1">اضغط ابدأ للبدء</div>
+        <div class="breath-ring" style="width:220px; height:220px;">
+          <div class="ring-bg" style="width:220px; height:220px;"></div>
+          <div class="breath-circle" id="ph-circle-1" style="width:80px; height:80px;"></div>
+        </div>
+        <div class="timer-label" id="ph-timer-1"></div>
+        <button class="btn btn-primary" id="ph-btn-1" style="margin-top:18px;">🌬️ ابدأ تمرين التنفس</button>
+      </div>
+
+      <a class="back-link" onclick="navigateTo('home')">⬅ رجوع للرئيسية</a>
+    </section>
+
+    <!-- ============== شاشة التهدئة ============== -->
+    <section class="screen" id="screen-calm">
+      <h1 class="page-title">🆘 لحظة تهدئة</h1>
+      <p class="calm-intro">أنا كيكو هنا معك. كل ما تشعر به الآن مؤقت، وستكون بخير. لنأخذ لحظة معًا 🦫</p>
+
+      <div class="card breathing-wrap">
+        <div class="phase-label" id="ph-label-2">اضغط ابدأ للبدء</div>
+        <div class="breath-ring" style="width:180px; height:180px;">
+          <div class="ring-bg" style="width:180px; height:180px;"></div>
+          <div class="breath-circle" id="ph-circle-2" style="width:70px; height:70px;"></div>
+        </div>
+        <div class="timer-label" id="ph-timer-2"></div>
+        <button class="btn btn-primary" id="ph-btn-2" style="margin-top:18px;">🌬️ ابدأ تمرين التنفس</button>
+
+        <div class="suggestion-card" id="suggestionCard">
+          <div class="s-title">اقتراح بسيط لك الآن</div>
+          <div class="s-text" id="suggestionText"></div>
+        </div>
+      </div>
+
+      <a class="back-link" onclick="navigateTo('home')">⬅ رجوع للرئيسية</a>
+    </section>
+
+  </main>
+</div>
+
+<!-- الشريط السفلي (جوال) -->
+<nav class="bottom-nav" id="bottomNav"></nav>
+
+<script>
+/* =================================================================
+   إعدادات وبيانات ثابتة — ✏️ منقولة من نسخة بايثون (نفس المحتوى)
+   ================================================================= */
+const MOTIVATIONAL_MESSAGES = [
+  "خطوة صغيرة اليوم أفضل من لا خطوة على الإطلاق. أنا فخور بك 🦫",
+  "مشاعرك مقبولة كلها، حتى الصعبة منها. أنت لست وحدك.",
+  "لا بأس أن يكون يومك بطيئاً. الكابيبارا نفسه لا يستعجل شيئًا 🌿",
+  "أنت أقوى مما تعتقد، وأهدأ مما تحتاج أن تكون الآن.",
+  "تذكّر أن تتنفس بعمق... أنا هنا بجانبك.",
+  "النجاح لا يعني الكمال، بل الاستمرار رغم الصعوبة.",
+  "امنح نفسك نفس اللطف الذي تمنحه لصديق يمر بيوم صعب.",
+  "كل يوم تنجو فيه هو انتصار يستحق أن يُحتفى به.",
+  "اسمح لنفسك بالراحة، الراحة أيضاً إنجاز.",
+  "أنت لست عبئًا على أحد، وجودك يستحق المكان الذي تشغله.",
+  "غداً فرصة جديدة، ولا بأس أن تكون اليوم متعباً فقط.",
+  "لست مضطراً أن تكون بخير طوال الوقت لتكون إنسانًا رائعًا.",
+  "نصيحة اليوم: اشرب كوب ماء، وامنح جسدك لحظة هدوء صغيرة.",
+  "حكمة صغيرة: العاصفة لا تدوم، وأنت أقوى منها.",
+  "لا تقارن بداياتك بمنتصف طريق أحد آخر.",
+  "أنت تفعل أفضل ما تستطيع بالأدوات المتوفرة لديك الآن، وهذا يكفي.",
+  "اليوم فرصة جديدة للبداية",
+  "كل خطوة صغيرة تقربك من هدفك",
+  "ثق بنفسك أكثر قليلاً",
+  "كيكو يراك تبذل جهداً",
+  "الأوقات الصعبة ستمر و ستبقى السكينة فقط",
+  "ما لا يقتلك يجعلك أقوى",
+  "لقد تجاوزنا الكثير لن تهزمنا الخطوة المتبقية",
+  "لا أبطال من غير جروح",
+  "لا تستسلم لأن الكثير ممن فشلوا لم يدركوا مدى قربهم للنجاح حين استسلموا",
+  "القادم أفضل البتأكيد",
+  "ستمطر فرجاً فلا تحزن",
+  "ليس هناك وقت للانهيار أدرس و أنت تصرخ",
+  "ربما اقتربت فرحتك",
+  "يمكننا دائماً البدء مرة اخرى",
+  "أحياناً يكون الفشل بداية النجاح",
+  "لم يقل أحد أن الأمر كان سهلاً",
+  "ثق بنفسك أكثر قليلاً",
+  "غداً يحمل ما كنت تنتظره",
+  "لا تستسلم بسبب يوم صعب",
+  "التغيير يبدأ بخطوة واحدة",
+  "الاخطاء دليل على انك تحاول",
+  "أحلامك تستحق المحاولة",
+  "تستطيع فعلها فقط لا تستسلم",
+  "النجاح رحلة وليس محطة",
+  "تذكر لماذا بدأ",
+  "الشجاعة ليست عدم الشعور بالخوف بل الاستمرار رغمه",
+  "امنح نفسك الوقت لتنمو",
+  "لا تقلل من قيمة تقدمك",
+  "على الأقل أنت تحاول وهذا وحده يكفي",
+  "أنت أقوى مما تظن",
+  "أنت تتعلم حتى عندما تشعر أنك لا تتقدم",
+  "استمر فالنتائج تحتاج الى صبر",
+  "الانجاز يبدأ بقرار",
+  "لا تخف من البداية من جديد",
+  "هم لا يخبرونك بهذا و لكنك أروع مما تظن",
+  "أنت تستحقق حياة مليئة بالسعادة و الأمل",
+  "ركز على ما تستطيع تغييره",
+  "أمنح نفسك التقدير الذي تستحقه",
+  "أحط نفسك بالأشياء التي تمنحك الامل",
+  "الوحدة أفضل من العلاقات المؤذية",
+  "جرب أن تختار نفسك ولو لمرة",
+  "كيكو فخور بأنك مازلت تحاول",
+  "كيكو يتمنى أن تكون لطيفاً مع نفسك كما انت دائماً مع الآخرين",
+  "كيكو متحمس ليرى ما ستحققه في المستقبل",
+  "حتى وان لم يكن هناك أحد يشجعك أو يؤمن بك تذكر أن كيكو يفعل",
+  "أنت تتطور حتى وان لم تلاحظ ذلك",
+  "الأحلام تحتاج الى عمل",
+  "لا تكن متواضعاً في طموحاتك و أحلامك أجعلها كبيرة بقدر الامكان",
+  "كل انجاز كبير يبدأ بفكرة صغيرة",
+  "كيكو يرى أنك أزدت جمالاً أخبرني ماذا كنت تفعل الأيام الماضية هيا أخبرني بسرعة",
+  "أعلم أنه صعب و لكنك تستطيع فعلها أنا أثق بك",
+  "البداية دائماً أصعب جزء",
+  "لا بأس ان فشلت حاول مرة أخرى انهل ليست نهاية العالم",
+  "كن ممتناً لما حققته",
+  "كيكو يقول:خذ استراحة قصيرة اذااحتجت",
+  "لا تقسو على نفسك كثيراً لقد بذلت قصارى جهدك",
+  "كيكو يتمنى لك يوماً مليئاً بالانجازات",
+  "كن الشخص الذي كنت تحتاجه بالامس",
+  "لنأخذ نفساً عميقاً و نبدأ مرة أخرى",
+  "كيكو يؤمن بأنك تستطيع فعلها",
+  "كيكو يقول:لا تنس شرب الماء, حتى الكابيبارا يحب الماء",
+  "كيكو يتمنى لك يوماً لطيفاً",
+  "كيكو يؤمن بالمحاولات أكثر من الكمال",
+  "كيكو يصفق لك على كل محاولة",
+  "كوب شاي أو قهوة قد يجعل يومك أفضل",
+  "الانجازات الصغيرة جميلة أيضاً",
+  "كيكو يرسل لك عناقاً افتراضياً",
+  "كيكو يقول:أنت تقوم بعمل رائع",
+  "ربما يكون اليوم أفضل مما تتوقع",
+  "ربما كوب من القهوة و كتاب هو بداية مثالية ليومك",
+  "كيكو يحب الاشخاص الذين لا يستسلمون",
+  "لا بأس ان احتجت للراحة",
+  "كيكو يتمنى لك النجاح",
+  "الامور الجيدة تحتاج وقتاً",
+  "اقرأ و لو لخمس دقائق",
+  "كيكو يشجعك من بعيد",
+  "افتح النافذة و خذ نفساً من الهواء",
+  "استمر حتى لو ببطء",
+  "أنت تنمو كل يوم",
+  "استمر...هذا يكفي",
+  "أنت تستحق التقدير",
+  " النجاح يحب المثابرين",
+  "تذكير ودي: أنت انسان و ليس بطارية هاتف, لا تنس الراحة",
+  "كيكو يقول:خذ نفساً عميقاً...لا,ليس لأنني طبيب أنا مجرد كابيبارا",
+  "هل تعلم؟لقد وصلت الى هنا,و هذا انجاز صغير يستحق نجمة",
+  "كيكو يتساءل:هل نحتاج استراحة أم نحتاج كعكة؟ سؤال صعب",
+  "لا داعي لأن تكون منتجاً طوال الوقت.حتى كيكو يأخذ وضعية البطاطا أحياناً",
+  "مهمة اليوم:اشرب ماءز مهمة كيكو:مراقبتك و هو يشرب عصيره الخيالي",
+  "أنت لم تفشل أنت فقط أعطيت الخطة فرصة لتصبح أكثر درامية",
+  "ليس عليك حل كل شيء,حتى كيكو لا يملك حلولاً لكل شيء...لكنه يمتلك آذان كابيبارا لطيفة",
+  "هل نأخذ استراحة صغيرة؟ دماغك قد يرسل شكوى رسمية",
+  "كيكو يظن أنه عليك التوقف عن تعذيب جهازك العصبي و النوم مبكراً",
+  "اليوم لا يحتاج الى بطولة خارقة.خطوة صغيرة تكفي",
+  "كيكو يسأل بكل جدية:هل أكلت شيئاً أم أننا نعيش على الهواء فقط؟",
+  "دماغك يشغل 57 تبويباً في نفس الوقت؟أغلق بعضها و خذ نفساً",
+  "أحياناً أفضل خطة هي:توقف قليلاً,تنفس,ثم قرر ماذا تفعل بعد ذلك",
+  "كيكو موجود! لا داعي للقلق...تقريباً",
+  "مرحباً أيها الكائن البشري. كيكو يحييك",
+  "لا أعرف ماذا يحدث,لكني أؤمن أنك تستطيع التعامل معه خطوة بخطوة",
+  "اذا كان عقلك مزدحماً, دعنا نرتب الأفكار واحدة واحدة",
+  "كيكو حاول أن يكون منتجاً اليوم...ثم تذكر أنه كابيبارا",
+  "هل يمكننا الاتفاق على عدم تحويل مشكلة صغيرة الى مسلسل من 8 مواسم؟",
+  "كيكو يقول: لا يمكنك انجاز كل شيء اليوم. حتى الانترنت يحتاج وقتاً للتحميل",
+  "حتى التقدم البطيء ما زال تقدماً",
+  "خطوة صغيرة اليوم أفضل من انتظار اللحظة المثالية",
+  "خذ الأمور واحدة واحدة. المستقبل لن يهرب منك",
+  "لا نحتاج الى انجاز أسطوري كل يوم",
+  "ذهب كيكو ليحضر فكرة عظيمة...و عاد بقطعة بسكويت",
+  "كيكو لا يعمل بدون وجبة خفيفة. هذه ليست مشكلة هذه سياسة",
+  "كنت سأقول شيئاً ذكياً لكنني كابيبارا",
+  "لو كان مزاجك لوناً ماذا سيكون؟",
+  "اختر بسرعة: يوم هادئ أم يوم مليء بالطاقة؟",
+  "عيك أن تخطو خطوة أحياناً و تتجاوز مخاوفك",
+  "اذا قام بها أحد من قبل على الأقل أنت أفضل. اذا لم يقم بها أحد اذاً أنت الأول",
+  "لا يهم كم سيستغرق الأمر المهم أن تستمر في المحاولة حتى تصل",
+  "أتمنى أن تجد شيئاً جميلاً في يومك, حتى لو كان صغيراً جداً",
+  "كيكو يذكرك بأن الأوقات الصعبة تجعل منك شخصاً قوياً",
+  "مرحباً...سعيد بتواجدك هنا اليوم",
+  "هل أنجزت شيئاً اليو؟ اذا كانت الاجابة لا...لا تقلق كيكو أيضاً",
+  "تذكير: شرب الماء فكرة جيدة. كيكو لا يريدك أن تتحول الى زبيب",
+  "كيكو يقترح استراحة صغيرة ثم نعود لمواخهة الحياة",
+  "كيكو يقول ان كل شيء سيكون بخير.كيكو لا يعرف لماذا لكنه متفائل جداً",
+  "كيكو لا يعرف كيف يصلح كل شيء...لكنه يستطيع البقاء معك بينما تحاول",
+];
+const CALM_SUGGESTIONS = [
+  "🥤 اشرب كوب ماء ببطء ولاحظ إحساسه.",
+  "🚶 امشِ لخمس دقائق، ولو داخل الغرفة.",
+  "🌤️ افتح نافذة وخذ نفسًا من الهواء الطلق.",
+  "📴 ضع هاتفك جانبًا لخمس دقائق فقط.",
+  "🎵 استمع لأغنية هادئة تحبها.",
+  "🧣 لف نفسك ببطانية دافئة لدقيقة.",
+  "✍️ اكتب ثلاث كلمات تصف شعورك الآن، دون حكم عليها.",
+];
+const MOODS = [
+  { key:'angry', label:'غاضب', emoji:'😠', color:'#E2937B', score:2 },
+  { key:'sad', label:'حزين', emoji:'😢', color:'#7FA8C9', score:2 },
+  { key:'anxious', label:'قلق', emoji:'😰', color:'#C9A9D9', score:2 },
+  { key:'happy', label:'سعيد', emoji:'😊', color:'#8FC3AA', score:5 },
+  { key:'depressed', label:'مكتئب', emoji:'😞', color:'#9A8AA8', score:1 },
+  { key:'normal', label:'عادي', emoji:'😐', color:'#C79A73', score:3 },
+];
+const NEGATIVE_MOODS = new Set(['sad','depressed','angry','anxious']);
+const WEEKDAY_AR = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+
+/* =================================================================
+   🆕 طبقة تخزين محلية عبر window.storage (بديل احترافي عن ملف JSON
+   في نسخة بايثون) — لا تُخزَّن أفكار المحرقة هنا مطلقًا.
+   ================================================================= */
+const memoryFallback = {};
+const Store = {
+  async get(key){
+    try{
+      if(window.storage){
+        const r = await window.storage.get(key, false);
+        return r ? JSON.parse(r.value) : null;
+      }
+    }catch(e){ /* المفتاح غير موجود بعد أو التخزين غير متاح */ }
+    return memoryFallback[key] ?? null;
+  },
+  async set(key, value){
+    memoryFallback[key] = value;
+    try{ if(window.storage){ await window.storage.set(key, JSON.stringify(value), false); } }
+    catch(e){ console.warn('تعذّر الحفظ التلقائي:', e); }
+  }
+};
+
+const state = { moods:[], gratitude:[] };
+
+function dateKey(d){
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function timeKey(d){
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+function dayOrdinal(d){
+  const start = new Date(d.getFullYear(),0,0);
+  return Math.floor((d-start)/86400000);
+}
+function getDailyMessage(){
+  return MOTIVATIONAL_MESSAGES[dayOrdinal(new Date()) % MOTIVATIONAL_MESSAGES.length];
+}
+
+/* =================================================================
+   🆕 كيكو كرسمة SVG احترافية (بدل الأشكال البسيطة في النسخة السابقة)
+   جسم دائري بسيط، عينان صغيرتان، ابتسامة هادئة، بني فاتح بلمسات
+   كريمية، يحمل ورقة خضراء صغيرة.
+   ================================================================= */
+function kikoSvg(mood='normal'){
+  let eyes, mouth;
+  switch(mood){
+    case 'sad': case 'depressed':
+      eyes = `<path d="M74 96 q8 6 16 0" stroke="#6F4E37" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+              <path d="M100 96 q8 -6 16 0" stroke="#6F4E37" stroke-width="3.4" fill="none" stroke-linecap="round"/>`;
+      mouth = `<path d="M85 128 q15 -12 30 0" stroke="#6F4E37" stroke-width="3.4" fill="none" stroke-linecap="round"/>`;
+      break;
+    case 'angry':
+      eyes = `<path d="M74 92 l16 8" stroke="#6F4E37" stroke-width="3.4" stroke-linecap="round"/>
+              <path d="M116 92 l-16 8" stroke="#6F4E37" stroke-width="3.4" stroke-linecap="round"/>`;
+      mouth = `<line x1="86" y1="128" x2="114" y2="128" stroke="#6F4E37" stroke-width="3.4" stroke-linecap="round"/>`;
+      break;
+    case 'anxious':
+      eyes = `<circle cx="82" cy="97" r="4.2" fill="#6F4E37"/><circle cx="108" cy="97" r="4.2" fill="#6F4E37"/>`;
+      mouth = `<circle cx="100" cy="130" r="5" fill="none" stroke="#6F4E37" stroke-width="3"/>`;
+      break;
+    case 'happy':
+      eyes = `<circle cx="82" cy="97" r="4.6" fill="#6F4E37"/><circle cx="108" cy="97" r="4.6" fill="#6F4E37"/>`;
+      mouth = `<path d="M80 124 q20 20 40 0" stroke="#6F4E37" stroke-width="3.6" fill="none" stroke-linecap="round"/>`;
+      break;
+    default:
+      eyes = `<circle cx="82" cy="97" r="4.4" fill="#6F4E37"/><circle cx="108" cy="97" r="4.4" fill="#6F4E37"/>`;
+      mouth = `<path d="M84 126 q16 12 32 0" stroke="#6F4E37" stroke-width="3.4" fill="none" stroke-linecap="round"/>`;
+  }
+  return `
+  <svg viewBox="0 0 190 190" width="190" height="190" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="bodyGrad" cx="35%" cy="28%" r="75%">
+        <stop offset="0%" stop-color="#E7C9A5"/>
+        <stop offset="100%" stop-color="#C08A5E"/>
+      </radialGradient>
+      <radialGradient id="faceGrad" cx="40%" cy="30%" r="80%">
+        <stop offset="0%" stop-color="#FBF0E1"/>
+        <stop offset="100%" stop-color="#EFDAB9"/>
+      </radialGradient>
+      <linearGradient id="leafGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#A9D9B8"/>
+        <stop offset="100%" stop-color="#5FA485"/>
+      </linearGradient>
+    </defs>
+    <ellipse cx="95" cy="100" rx="72" ry="66" fill="url(#bodyGrad)" stroke="#8C6448" stroke-width="2"/>
+    <circle cx="52" cy="52" r="17" fill="#EFDAB9" stroke="#8C6448" stroke-width="2"/>
+    <circle cx="138" cy="52" r="17" fill="#EFDAB9" stroke="#8C6448" stroke-width="2"/>
+    <ellipse cx="97" cy="108" rx="46" ry="42" fill="url(#faceGrad)"/>
+    ${eyes}
+    <ellipse cx="97" cy="112" rx="6" ry="4.2" fill="#6F4E37"/>
+    ${mouth}
+    <path d="M150 128 q14 -10 8 -28 q-16 -4 -18 14 q-2 10 10 14 Z" fill="url(#leafGrad)" stroke="#4F8C72" stroke-width="1.4"/>
+    <line x1="150" y1="128" x2="158" y2="105" stroke="#4F8C72" stroke-width="1.4"/>
+  </svg>`;
+}
+function setKikoMood(mood){ document.getElementById('kikoSvgHolder').innerHTML = kikoSvg(mood); }
+
+/* =================================================================
+   🆕 التنقل بين الشاشات — يبني شريطي التنقل (جانبي + سفلي) تلقائيًا
+   ================================================================= */
+const NAV_ITEMS = [
+  { id:'home', icon:'🏠', label:'الرئيسية' },
+  { id:'burn', icon:'🔥', label:'المحرقة' },
+  { id:'mood', icon:'📝', label:'المزاج' },
+  { id:'gratitude', icon:'🙏', label:'الامتنان' },
+  { id:'stats', icon:'📊', label:'الإحصائيات' },
+];
+function buildNav(){
+  const sidebar = document.getElementById('sidebarNav');
+  const bottom = document.getElementById('bottomNav');
+  NAV_ITEMS.forEach(item=>{
+    const a = document.createElement('button');
+    a.className='nav-item'; a.dataset.id=item.id;
+    a.innerHTML = `<span class="ico">${item.icon}</span><span>${item.label}</span>`;
+    a.onclick = ()=>navigateTo(item.id);
+    sidebar.appendChild(a);
+
+    const b = document.createElement('button');
+    b.dataset.id=item.id;
+    b.innerHTML = `<span class="ico">${item.icon}</span><span>${item.label}</span>`;
+    b.onclick = ()=>navigateTo(item.id);
+    bottom.appendChild(b);
+  });
+}
+function navigateTo(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item, .bottom-nav button').forEach(b=>{
+    b.classList.toggle('active', b.dataset.id === id);
+  });
+  if(id==='home') refreshHome();
+  if(id==='gratitude') refreshGratitude();
+  if(id==='stats') refreshStats();
+}
+
+/* =================================================================
+   ✏️ الشاشة الرئيسية: اقتباس اليوم + تنبيه نمط المزاج (نفس منطق بايثون)
+   ================================================================= */
+function refreshHome(){
+  document.getElementById('homeQuote').textContent = getDailyMessage();
+  const alertBox = document.getElementById('patternAlert');
+  alertBox.classList.toggle('show', negativePatternDetected());
+  setKikoMood('happy');
+}
+function negativePatternDetected(days=21, minEntries=7, threshold=0.6){
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-days);
+  const recent = state.moods.filter(m=>{
+    const [y,mo,da] = m.date.split('-').map(Number);
+    return new Date(y,mo-1,da) >= cutoff;
+  });
+  if(recent.length < minEntries) return false;
+  const negative = recent.filter(m=>NEGATIVE_MOODS.has(m.mood)).length;
+  return (negative/recent.length) >= threshold;
+}
+
+/* =================================================================
+   ✏️ محرقة الأفكار — نفس فكرة بايثون، بتحريك CSS بدل Canvas يدوي
+   ================================================================= */
+let burning = false;
+function startBurn(){
+  const input = document.getElementById('burnInput');
+  const text = input.value.trim();
+  const btn = document.getElementById('burnBtn');
+  const stage = document.getElementById('burnStage');
+  if(!text || burning) return;
+  burning = true; btn.disabled = true; input.disabled = true;
+  stage.innerHTML = '';
+  const textEl = document.createElement('div');
+  textEl.className = 'burn-text';
+  textEl.textContent = text;
+  stage.appendChild(textEl);
+  requestAnimationFrame(()=> textEl.classList.add('burning'));
+
+  const sparkTimer = setInterval(()=>{
+    const s = document.createElement('span');
+    s.className = 'spark';
+    s.style.insetInlineStart = (38 + Math.random()*24) + '%';
+    s.style.setProperty('--drift', (Math.random()*50-25)+'px');
+    s.style.background = ['#FF8A4C','#FFC24B','#FF4D4D'][Math.floor(Math.random()*3)];
+    stage.appendChild(s);
+    setTimeout(()=>s.remove(), 900);
+  }, 90);
+
+  setTimeout(()=>{
+    clearInterval(sparkTimer);
+    stage.innerHTML = '<div class="burn-done">✨ اختفت الفكرة تمامًا... أنت الآن أخف 🦫</div>';
+    input.value=''; input.disabled=false; btn.disabled=false; burning=false;
+    setTimeout(()=>{ stage.innerHTML=''; }, 2500);
+  }, 1850);
+}
+
+/* =================================================================
+   ✏️ سجل المزاج
+   ================================================================= */
+function buildMoodGrid(){
+  const grid = document.getElementById('moodGrid');
+  MOODS.forEach(m=>{
+    const btn = document.createElement('button');
+    btn.className = 'mood-btn';
+    btn.style.background = m.color;
+    btn.innerHTML = `<span class="em">${m.emoji}</span><span>${m.label}</span>`;
+    btn.onclick = ()=>logMood(m);
+    grid.appendChild(btn);
+  });
+}
+async function logMood(m){
+  const now = new Date();
+  state.moods.push({ date:dateKey(now), time:timeKey(now), mood:m.key, label:m.label });
+  await Store.set('kiko-moods', state.moods);
+  document.getElementById('moodConfirm').textContent = `شكرًا لأنك شاركتني شعورك اليوم 💛 (${m.label})`;
+}
+
+/* =================================================================
+   ✏️ صندوق الامتنان
+   ================================================================= */
+async function saveGratitude(){
+  const input = document.getElementById('gratitudeInput');
+  const text = input.value.trim();
+  if(!text) return;
+  const today = dateKey(new Date());
+  const list = state.gratitude;
+  if(list.length && list[list.length-1].date === today){
+    list[list.length-1].text = text;
+    list[list.length-1].time = timeKey(new Date());
+  } else {
+    list.push({ date:today, time:timeKey(new Date()), text });
+  }
+  await Store.set('kiko-gratitude', list);
+  document.getElementById('gratitudeStatus').textContent = 'تم الحفظ، شكرًا لمشاركتي هذا 💚';
+  refreshGratitude();
+}
+function refreshGratitude(){
+  const today = dateKey(new Date());
+  const list = state.gratitude;
+  const input = document.getElementById('gratitudeInput');
+  const status = document.getElementById('gratitudeStatus');
+  if(list.length && list[list.length-1].date === today){
+    input.value = list[list.length-1].text;
+    status.textContent = 'لقد سجلت امتنانك اليوم بالفعل ✅ — يمكنك تعديله';
+  }
+  const box = document.getElementById('gratitudeList');
+  box.innerHTML = '';
+  const items = [...list].reverse().slice(0,40);
+  if(!items.length){
+    box.innerHTML = '<div class="empty-note">لا يوجد شيء محفوظ بعد.</div>';
+    return;
+  }
+  items.forEach(e=>{
+    const div = document.createElement('div');
+    div.className = 'gratitude-item';
+    div.innerHTML = `<div class="g-text">${escapeHtml(e.text)}</div><div class="g-date">${e.date}</div>`;
+    box.appendChild(div);
+  });
+}
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* =================================================================
+   ✏️ الإحصائيات: متوسط المزاج، أفضل يوم، رسم بياني SVG بدل Canvas
+   ================================================================= */
+function averageScore(){
+  if(!state.moods.length) return null;
+  const scoreOf = k => (MOODS.find(m=>m.key===k)||{}).score ?? 3;
+  const sum = state.moods.reduce((a,m)=>a+scoreOf(m.mood),0);
+  return Math.round((sum/state.moods.length)*10)/10;
+}
+function bestWeekday(){
+  if(!state.moods.length) return null;
+  const scoreOf = k => (MOODS.find(m=>m.key===k)||{}).score ?? 3;
+  const buckets = {};
+  state.moods.forEach(m=>{
+    const [y,mo,da] = m.date.split('-').map(Number);
+    const wd = new Date(y,mo-1,da).getDay();
+    (buckets[wd] = buckets[wd]||[]).push(scoreOf(m.mood));
+  });
+  let bestIdx=null, bestAvg=-1;
+  Object.entries(buckets).forEach(([idx,arr])=>{
+    const avg = arr.reduce((a,b)=>a+b,0)/arr.length;
+    if(avg>bestAvg){ bestAvg=avg; bestIdx=Number(idx); }
+  });
+  return bestIdx===null ? null : WEEKDAY_AR[bestIdx];
+}
+function dailyAverages(days=14){
+  const scoreOf = k => (MOODS.find(m=>m.key===k)||{}).score ?? 3;
+  const buckets = {};
+  state.moods.forEach(m=>{ (buckets[m.date] = buckets[m.date]||[]).push(scoreOf(m.mood)); });
+  const dates = Object.keys(buckets).sort().slice(-days);
+  return dates.map(d=>[d, buckets[d].reduce((a,b)=>a+b,0)/buckets[d].length]);
+}
+function refreshStats(){
+  const avg = averageScore();
+  document.getElementById('avgMoodValue').textContent = avg ? `${avg} / 5` : '—';
+  document.getElementById('bestDayValue').textContent = bestWeekday() || '—';
+
+  const series = dailyAverages(14);
+  const holder = document.getElementById('chartHolder');
+  const emptyNote = document.getElementById('chartEmptyNote');
+  if(series.length < 2){
+    holder.style.display='none'; emptyNote.style.display='block';
+    return;
+  }
+  holder.style.display='block'; emptyNote.style.display='none';
+  holder.innerHTML = renderChartSvg(series);
+}
+function renderChartSvg(series){
+  const W=460,H=210, padL=34,padR=14,padT=14,padB=26;
+  const plotW=W-padL-padR, plotH=H-padT-padB, minV=1, maxV=5;
+  let grid='';
+  for(let v=1;v<=5;v++){
+    const y = padT + plotH*(1-(v-minV)/(maxV-minV));
+    grid += `<line class="grid-line" x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}"/>
+             <text class="axis-label" x="${padL-8}" y="${y+3}" text-anchor="end">${v}</text>`;
+  }
+  const n = series.length;
+  const step = n>1 ? plotW/(n-1) : 0;
+  const pts = series.map((s,i)=>{
+    const x = padL + i*step;
+    const y = padT + plotH*(1-(s[1]-minV)/(maxV-minV));
+    return {x,y,label:s[0].slice(5)};
+  });
+  const line = pts.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  let dots='', labels='';
+  pts.forEach((p,i)=>{
+    dots += `<circle class="data-point" cx="${p.x}" cy="${p.y}" r="4"><title>${series[i][0]}</title></circle>`;
+    if(i % Math.max(1,Math.floor(n/7))===0 || i===n-1){
+      labels += `<text class="axis-label" x="${p.x}" y="${H-padB+14}" text-anchor="middle">${p.label}</text>`;
+    }
+  });
+  return `<svg class="chart-svg" viewBox="0 0 ${W} ${H}">${grid}
+    <polyline class="data-line" points="${line}"/>${dots}${labels}</svg>`;
+}
+
+/* =================================================================
+   ✏️ تمرين التنفس القابل لإعادة الاستخدام (شهيق4/احتفاظ2/زفير6)
+   ================================================================= */
+function createBreathing(circleEl, labelEl, timerEl, btnEl, durationSec, baseSize, onComplete){
+  const INHALE=4, HOLD=2, EXHALE=6, CYCLE=12;
+  const minScale = 0.42, maxScale = 1;
+  let elapsed=0, timer=null;
+
+  function tick(){
+    if(elapsed >= durationSec){ complete(); return; }
+    const t = elapsed % CYCLE;
+    let scale, label;
+    if(t < INHALE){ const p=t/INHALE; scale=minScale+(maxScale-minScale)*p; label='شهيق ببطء... 🌬️'; }
+    else if(t < INHALE+HOLD){ scale=maxScale; label='احتفظ بالنفس... ✋'; }
+    else{ const p=(t-INHALE-HOLD)/EXHALE; scale=maxScale-(maxScale-minScale)*p; label='أخرج الزفير ببطء... 😮‍💨'; }
+    circleEl.style.transform = `scale(${scale})`;
+    labelEl.textContent = label;
+    timerEl.textContent = `${Math.max(0, Math.round(durationSec-elapsed))} ثانية متبقية`;
+    elapsed += 0.1;
+    timer = setTimeout(tick, 100);
+  }
+  function start(){
+    if(timer) return;
+    elapsed = 0; btnEl.disabled = true; btnEl.textContent = 'جارٍ التنفس معك...';
+    tick();
+  }
+  function complete(){
+    clearTimeout(timer); timer=null;
+    labelEl.textContent = 'أحسنت! أتممت تمرين التنفس 🌿';
+    timerEl.textContent = '';
+    btnEl.disabled = false; btnEl.textContent = '🔁 أعد التمرين';
+    if(onComplete) onComplete();
+  }
+  function stop(){ clearTimeout(timer); timer=null; circleEl.style.transform='scale(.42)'; }
+  btnEl.addEventListener('click', start);
+  return { stop };
+}
+
+const breathing1 = createBreathing(
+  document.getElementById('ph-circle-1'), document.getElementById('ph-label-1'),
+  document.getElementById('ph-timer-1'), document.getElementById('ph-btn-1'), 60, 220
+);
+const breathing2 = createBreathing(
+  document.getElementById('ph-circle-2'), document.getElementById('ph-label-2'),
+  document.getElementById('ph-timer-2'), document.getElementById('ph-btn-2'), 60, 180,
+  ()=>{
+    const suggestion = CALM_SUGGESTIONS[Math.floor(Math.random()*CALM_SUGGESTIONS.length)];
+    document.getElementById('suggestionText').textContent = suggestion;
+    document.getElementById('suggestionCard').classList.add('show');
+  }
+);
+document.getElementById('screen-breathing'); // (لا شيء إضافي، يبقى التمرين حتى يعود المستخدم يدويًا)
+
+/* =================================================================
+   🆕 إرسال اقتباس اليوم كإشعار حقيقي من المتصفح (Web Notification API)
+   بدل الاكتفاء بعرضه في بطاقة الشاشة الرئيسية فقط. إن رفض المستخدم
+   الإذن أو كانت البيئة لا تدعم الإشعارات (كمعاينة داخل إطار iframe)
+   يظهر بدلاً منه إشعار داخلي منبثق (Toast) بنفس المحتوى.
+   ================================================================= */
+async function sendDailyQuoteNotification(){
+  const title = '🌿 اقتباس اليوم من كيكو';
+  const body = getDailyMessage();
+  try{
+    if('Notification' in window){
+      let permission = Notification.permission;
+      if(permission === 'default'){ permission = await Notification.requestPermission(); }
+      if(permission === 'granted'){
+        new Notification(title, { body, lang:'ar', dir:'rtl' });
+        return;
+      }
+    }
+  }catch(e){ /* الإشعارات غير مدعومة في هذه البيئة، سننتقل للإشعار الداخلي */ }
+  showToast(title, body);
+}
+function showToast(title, body){
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `
+    <button class="t-close" aria-label="إغلاق">✕</button>
+    <div class="t-title">${escapeHtml(title)}</div>
+    <div class="t-body">${escapeHtml(body)}</div>`;
+  toast.querySelector('.t-close').onclick = ()=>toast.remove();
+  container.appendChild(toast);
+  setTimeout(()=>toast.remove(), 7000);
+}
+
+/* =================================================================
+   ✏️ تنبيه الإخلاء عند بدء التطبيق
+   ================================================================= */
+document.getElementById('disclaimerBtn').onclick = ()=>{
+  document.getElementById('disclaimerModal').remove();
+  setTimeout(sendDailyQuoteNotification, 350); // 🆕 إرسال الإشعار بعد إغلاق التنبيه
+};
+
+/* =================================================================
+   نقطة البدء
+   ================================================================= */
+async function init(){
+  buildNav();
+  buildMoodGrid();
+  setKikoMood('normal');
+  state.moods = (await Store.get('kiko-moods')) || [];
+  state.gratitude = (await Store.get('kiko-gratitude')) || [];
+  navigateTo('home');
+}
+init();
+</script>
+</body>
+</html>
