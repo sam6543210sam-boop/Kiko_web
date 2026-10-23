@@ -23,7 +23,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Kiko 🦫 — رفيقك النفسي اليومي</title>
-<link rel="manifest" href="manifest.json">
+<"link rel="manifest" href="manifest.json>
 
 <!-- 🆕 أيقونة التطبيق: رسمة كيكو المبسّطة كصورة SVG مُضمّنة داخل الملف
      نفسه (Data URI) — تظهر في تبويب المتصفح، وكأيقونة عند إضافة
@@ -266,6 +266,115 @@ textarea.field:focus{ border-color:var(--accent-600); }
 .gratitude-item .g-text{ font-size:13.5px; line-height:1.8; }
 .gratitude-item .g-date{ font-size:10.5px; color:var(--text-muted); margin-top:4px; font-family:var(--font-mono); }
 .empty-note{ color:var(--text-muted); font-size:13px; text-align:center; padding:24px 0; }
+.gratitude-item{ background:var(--surface-2); border:1px solid rgba(111,78,55,.08); border-radius:var(--radius-sm); padding:12px 14px; }
+.gratitude-item .g-text{ font-size:13.5px; line-height:1.8; }
+.gratitude-item .g-date{ font-size:10.5px; color:var(--text-muted); margin-top:4px; font-family:var(--font-mono); }
+.empty-note{ color:var(--text-muted); font-size:13px; text-align:center; padding:24px 0; }
+
+/* زر حذف الامتنان */
+.gratitude-delete{
+  border:0;
+  background:transparent;
+  cursor:pointer;
+  font-size:15px;
+  padding:4px;
+  opacity:.55;
+  transition:opacity .2s, transform .2s;
+  flex-shrink:0;
+}
+
+.gratitude-delete:hover{
+  opacity:1;
+  transform:scale(1.1);
+}
+/* ---------- تذكيرات Kiko ---------- */
+.reminder-card{
+  margin-top:18px;
+}
+
+.reminder-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:14px 0;
+  border-bottom:1px solid rgba(111,78,55,.08);
+}
+
+.reminder-row:last-child{
+  border-bottom:0;
+}
+
+.reminder-info{
+  flex:1;
+}
+
+.reminder-title{
+  font-weight:700;
+  font-size:14px;
+  color:var(--text);
+}
+
+.reminder-sub{
+  font-size:11.5px;
+  color:var(--text-muted);
+  margin-top:3px;
+  line-height:1.6;
+}
+
+.reminder-switch{
+  position:relative;
+  width:46px;
+  height:25px;
+  flex-shrink:0;
+}
+
+.reminder-switch input{
+  opacity:0;
+  width:0;
+  height:0;
+}
+
+.reminder-slider{
+  position:absolute;
+  inset:0;
+  cursor:pointer;
+  background:#D8CEC3;
+  border-radius:30px;
+  transition:.2s;
+}
+
+.reminder-slider::before{
+  content:'';
+  position:absolute;
+  width:19px;
+  height:19px;
+  right:3px;
+  top:3px;
+  background:#fff;
+  border-radius:50%;
+  transition:.2s;
+  box-shadow:var(--shadow-sm);
+}
+
+.reminder-switch input:checked + .reminder-slider{
+  background:var(--accent-600);
+}
+
+.reminder-switch input:checked + .reminder-slider::before{
+  transform:translateX(-21px);
+}
+
+.reminder-time{
+  width:100%;
+  border:1px solid rgba(111,78,55,.12);
+  border-radius:var(--radius-sm);
+  background:var(--surface-2);
+  padding:11px 12px;
+  font-family:var(--font-body);
+  font-size:14px;
+  color:var(--text);
+}
 
 /* ---------- الإحصائيات ---------- */
 .stats-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
@@ -402,6 +511,89 @@ textarea.field:focus{ border-color:var(--accent-600); }
       <p class="page-sub" style="margin-top:22px;">ما كتبته سابقًا — عُد إليه كلما احتجت 🌿</p>
       <div class="gratitude-list" id="gratitudeList"></div>
     </section>
+
+    <section class="screen" id="screen-reminders">
+
+  <h1 class="page-title">🔔 التذكيرات</h1>
+
+  <p class="page-sub">
+    تذكيرات صغيرة تساعدك على الاهتمام بنفسك خلال اليوم.
+  </p>
+
+  <div class="card reminder-card">
+
+    <div class="reminder-row">
+
+      <div class="reminder-info">
+        <div class="reminder-title">🌿 اقتباس يومي</div>
+        <div class="reminder-sub">
+          تذكيرك برسالة Kiko اليومية.
+        </div>
+      </div>
+
+      <label class="reminder-switch">
+        <input type="checkbox" id="quoteReminderToggle">
+        <span class="reminder-slider"></span>
+      </label>
+
+    </div>
+
+
+    <div class="reminder-row">
+
+      <div class="reminder-info">
+        <div class="reminder-title">📝 تسجيل المزاج</div>
+        <div class="reminder-sub">
+          تذكير بسيط لتسجيل شعورك اليوم.
+        </div>
+      </div>
+
+      <label class="reminder-switch">
+        <input type="checkbox" id="moodReminderToggle">
+        <span class="reminder-slider"></span>
+      </label>
+
+    </div>
+
+
+    <div style="margin-top:16px;">
+
+      <label class="reminder-title" for="reminderTime">
+        ⏰ وقت التذكير
+      </label>
+
+      <input
+        class="reminder-time"
+        type="time"
+        id="reminderTime"
+        value="20:00"
+      >
+
+    </div>
+
+
+    <button
+      class="btn btn-primary btn-block"
+      style="margin-top:16px;"
+      id="enableRemindersBtn"
+    >
+      🔔 تفعيل الإشعارات
+    </button>
+
+    <div
+      class="gratitude-status"
+      id="reminderStatus"
+    ></div>
+
+  </div>
+
+
+  <p class="footnote">
+    يمكنك اختيار نوع التذكير والوقت المناسب لك.
+    ستحتاج Kiko إلى إذن منك لإرسال الإشعارات.
+  </p>
+
+</section>
 
     <!-- ============== الإحصائيات ============== -->
     <section class="screen" id="screen-stats">
@@ -641,21 +833,23 @@ const WEEKDAY_AR = ['الأحد','الاثنين','الثلاثاء','الأرب
    🆕 طبقة تخزين محلية عبر window.storage (بديل احترافي عن ملف JSON
    في نسخة بايثون) — لا تُخزَّن أفكار المحرقة هنا مطلقًا.
    ================================================================= */
-const memoryFallback = {};
-const Store = {
+  const Store = {
   async get(key){
-    try{
-      if(window.storage){
-        const r = await window.storage.get(key, false);
-        return r ? JSON.parse(r.value) : null;
-      }
-    }catch(e){ /* المفتاح غير موجود بعد أو التخزين غير متاح */ }
-    return memoryFallback[key] ?? null;
+    try {
+      const value = localStorage.getItem(key);
+      return value ? JSON.parse(value) : null;
+    } catch(e) {
+      console.warn('تعذر قراءة البيانات المحفوظة:', e);
+      return null;
+    }
   },
+
   async set(key, value){
-    memoryFallback[key] = value;
-    try{ if(window.storage){ await window.storage.set(key, JSON.stringify(value), false); } }
-    catch(e){ console.warn('تعذّر الحفظ التلقائي:', e); }
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch(e) {
+      console.warn('تعذر حفظ البيانات:', e);
+    }
   }
 };
 
@@ -743,6 +937,7 @@ const NAV_ITEMS = [
   { id:'burn', icon:'🔥', label:'المحرقة' },
   { id:'mood', icon:'📝', label:'المزاج' },
   { id:'gratitude', icon:'🙏', label:'الامتنان' },
+  { id:'reminders',icon:'🔔', label:'التذكيرات'},
   { id:'stats', icon:'📊', label:'الإحصائيات' },
 ];
 function buildNav(){
@@ -856,42 +1051,86 @@ async function logMood(m){
 async function saveGratitude(){
   const input = document.getElementById('gratitudeInput');
   const text = input.value.trim();
+
   if(!text) return;
-  const today = dateKey(new Date());
-  const list = state.gratitude;
-  if(list.length && list[list.length-1].date === today){
-    list[list.length-1].text = text;
-    list[list.length-1].time = timeKey(new Date());
-  } else {
-    list.push({ date:today, time:timeKey(new Date()), text });
-  }
-  await Store.set('kiko-gratitude', list);
-  document.getElementById('gratitudeStatus').textContent = 'تم الحفظ، شكرًا لمشاركتي هذا 💚';
+
+  const now = new Date();
+
+  // إضافة امتنان جديد بدل استبدال امتنان اليوم
+  state.gratitude.push({
+    date: dateKey(now),
+    time: timeKey(now),
+    text: text
+  });
+
+  // حفظ القائمة كاملة
+  await Store.set('kiko-gratitude', state.gratitude);
+
+  // تفريغ مربع الكتابة حتى يمكن كتابة امتنان آخر
+  input.value = '';
+
+  document.getElementById('gratitudeStatus').textContent =
+    'تم الحفظ، شكرًا لمشاركتي هذا 💚';
+
   refreshGratitude();
 }
 function refreshGratitude(){
-  const today = dateKey(new Date());
   const list = state.gratitude;
-  const input = document.getElementById('gratitudeInput');
-  const status = document.getElementById('gratitudeStatus');
-  if(list.length && list[list.length-1].date === today){
-    input.value = list[list.length-1].text;
-    status.textContent = 'لقد سجلت امتنانك اليوم بالفعل ✅ — يمكنك تعديله';
-  }
   const box = document.getElementById('gratitudeList');
+  const status = document.getElementById('gratitudeStatus');
+  const input = document.getElementById('gratitudeInput');
+
+  input.value = '';
   box.innerHTML = '';
+
   const items = [...list].reverse().slice(0,40);
+
   if(!items.length){
-    box.innerHTML = '<div class="empty-note">لا يوجد شيء محفوظ بعد.</div>';
+    box.innerHTML =
+      '<div class="empty-note">لا يوجد شيء محفوظ بعد.</div>';
+    status.textContent = '';
     return;
   }
-  items.forEach(e=>{
+
+  items.forEach((e, reverseIndex)=>{
+    // نرجع إلى موقع العنصر الحقيقي داخل القائمة
+    const realIndex = list.length - 1 - reverseIndex;
+
     const div = document.createElement('div');
     div.className = 'gratitude-item';
-    div.innerHTML = `<div class="g-text">${escapeHtml(e.text)}</div><div class="g-date">${e.date}</div>`;
+
+    div.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+        <div style="flex:1;">
+          <div class="g-text">${escapeHtml(e.text)}</div>
+          <div class="g-date">${e.date} — ${e.time}</div>
+        </div>
+
+        <button
+          class="gratitude-delete"
+          onclick="deleteGratitude(${realIndex})"
+          aria-label="حذف الامتنان"
+          title="حذف"
+        >🗑️</button>
+      </div>
+    `;
+
     box.appendChild(div);
   });
+
+  status.textContent = '';
 }
+
+async function deleteGratitude(index){
+  if(index < 0 || index >= state.gratitude.length) return;
+
+  state.gratitude.splice(index, 1);
+
+  await Store.set('kiko-gratitude', state.gratitude);
+
+  refreshGratitude();
+}
+
 function escapeHtml(s){
   return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -1057,6 +1296,77 @@ function showToast(title, body){
   container.appendChild(toast);
   setTimeout(()=>toast.remove(), 7000);
 }
+// ---------- تذكيرات Kiko ----------
+
+async function saveReminderSettings(){
+  const quoteEnabled =
+    document.getElementById('quoteReminderToggle').checked;
+
+  const moodEnabled =
+    document.getElementById('moodReminderToggle').checked;
+
+  const time =
+    document.getElementById('reminderTime').value;
+
+  await Store.set('kiko-reminders', {
+    quoteEnabled,
+    moodEnabled,
+    time
+  });
+}
+
+
+async function loadReminderSettings(){
+  const settings =
+    (await Store.get('kiko-reminders')) || {
+      quoteEnabled:false,
+      moodEnabled:false,
+      time:'20:00'
+    };
+
+  document.getElementById('quoteReminderToggle').checked =
+    !!settings.quoteEnabled;
+
+  document.getElementById('moodReminderToggle').checked =
+    !!settings.moodEnabled;
+
+  document.getElementById('reminderTime').value =
+    settings.time || '20:00';
+}
+
+
+async function enableReminders(){
+
+  try{
+
+    if(!('Notification' in window)){
+      document.getElementById('reminderStatus').textContent =
+        'هذا المتصفح لا يدعم إشعارات Kiko.';
+      return;
+    }
+
+    let permission = Notification.permission;
+
+    if(permission === 'default'){
+      permission = await Notification.requestPermission();
+    }
+
+    if(permission !== 'granted'){
+      document.getElementById('reminderStatus').textContent =
+        'لم يتم السماح بالإشعارات. يمكنك السماح بها من إعدادات المتصفح.';
+      return;
+    }
+
+    await saveReminderSettings();
+
+  }catch(e){
+
+    console.warn('تعذر تفعيل الإشعارات:', e);
+
+    document.getElementById('reminderStatus').textContent =
+      'حدثت مشكلة بسيطة أثناء تفعيل الإشعارات.';
+  }
+}
 
 /* =================================================================
    ✏️ تنبيه الإخلاء عند بدء التطبيق
@@ -1075,19 +1385,16 @@ async function init(){
   setKikoMood('normal');
   state.moods = (await Store.get('kiko-moods')) || [];
   state.gratitude = (await Store.get('kiko-gratitude')) || [];
+  loadReminderSettings();
+
+document.getElementById('enableRemindersBtn').onclick = enableReminders;
+
+document.getElementById('quoteReminderToggle').onchange = saveReminderSettings;
+document.getElementById('moodReminderToggle').onchange = saveReminderSettings;
+document.getElementById('reminderTime').onchange = saveReminderSettings;
   navigateTo('home');
 }
 init();
-</script>
-
-  <script>
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js")
-        .then(() => console.log("Kiko Service Worker registered successfully!"))
-        .catch((error) => console.error("Service Worker registration failed:", error));
-    });
-  }
 </script>
 </body>
 </html>
